@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🚨 Сигнализация - Управление</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    header {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+    }
+    
+    header h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .status-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+    }
+    
+    .card h3 {
+      color: #667eea;
+      margin-bottom: 15px;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .status-item:last-child {
+      border-bottom: none;
+    }
+    
+    .status-label {
+      font-weight: 600;
+      color: #555;
+    }
+    
+    .status-value {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    
+    .status-on {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .status-off {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    .status-warn {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .temp-display {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+    
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    button {
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .btn-primary {
+      background: #667eea;
+      color: white;
+      grid-column: 1 / -1;
+    }
+    
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+    
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+    
+    .btn-info {
+      background: #17a2b8;
+      color: white;
+    }
+    
+    .full-width {
+      grid-column: 1 / -1;
+    }
+    
+    .history {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }
+    
+    .history h3 {
+      color: #667eea;
+      margin-bottom: 15px;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .event {
+      padding: 10px;
+      margin-bottom: 8px;
+      border-left: 4px solid #999;
+      border-radius: 4px;
+      font-size: 13px;
+      background: #f8f9fa;
+    }
+    
+    .event.success {
+      border-color: #28a745;
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .event.danger {
+      border-color: #dc3545;
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    .event.warning {
+      border-color: #ffc107;
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .event.info {
+      border-color: #17a2b8;
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+    
+    .event-time {
+      font-weight: bold;
+      margin-right: 10px;
+      color: #666;
+    }
+    
+    .last-update {
+      text-align: center;
+      color: #999;
+      font-size: 12px;
+      margin-top: 20px;
+    }
+    
+    @media (max-width: 600px) {
+      .status-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      header h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🚨 СИГНАЛИЗАЦИЯ</h1>
+      <p>Управление и мониторинг системы</p>
+    </header>
+    
+    <div class="status-grid">
+      <!-- СОСТОЯНИЕ -->
+      <div class="card">
+        <h3>Статус системы</h3>
+        <div class="status-item">
+          <span class="status-label">Охрана</span>
+          <span class="status-value" id="armed">ВЫКЛ</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Тревога</span>
+          <span class="status-value" id="alarm">НЕТ</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Питание ОСН</span>
+          <span class="status-value" id="main">ЕСТЬ</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Питание РЕЗ</span>
+          <span class="status-value" id="backup">ЕСТЬ</span>
+        </div>
+        <div class="temp-display" id="temp">Температура: 23.4°C</div>
+      </div>
+      
+      <!-- УПРАВЛЕНИЕ ОХРАНОЙ -->
+      <div class="card">
+        <h3>Управление охраной</h3>
+        <div class="controls">
+          <button class="btn-success" onclick="sendCommand('arm')">✓ ОХРАНА ВКЛ</button>
+          <button class="btn-danger" onclick="sendCommand('disarm')">✗ ОХРАНА ВЫКЛ</button>
+          <button class="btn-danger full-width" onclick="sendCommand('alarm_reset')">🔔 СБРОС ТРЕВОГИ</button>
+        </div>
+      </div>
+      
+      <!-- НАГРУЗКИ -->
+      <div class="card">
+        <h3>Нагрузки</h3>
+        <div class="controls">
+          <button class="btn-info" onclick="sendCommand('load1_on')">💡 НАГРУЗКА 1 ВКЛ</button>
+          <button class="btn-danger" onclick="sendCommand('load1_off')">💡 НАГРУЗКА 1 ВЫКЛ</button>
+          <button class="btn-info" onclick="sendCommand('load2_on')">💡 НАГРУЗКА 2 ВКЛ</button>
+          <button class="btn-danger" onclick="sendCommand('load2_off')">💡 НАГРУЗКА 2 ВЫКЛ</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ИСТОРИЯ СОБЫТИЙ -->
+    <div class="history">
+      <h3>История событий</h3>
+      <div id="eventList"></div>
+    </div>
+    
+    <div class="last-update">
+      Последнее обновление: <span id="lastUpdate">никогда</span>
+    </div>
+  </div>
+  
+  <script>
+    // ===== ФУНКЦИИ =====
+    async function sendCommand(cmd) {
+      try {
+        const response = await fetch('/api/command', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ command: cmd })
+        });
+        
+        if (response.ok) {
+          updateStatus();
+          loadHistory();
+        }
+      } catch (e) {
+        console.error('Ошибка:', e);
+      }
+    }
+    
+    async function updateStatus() {
+      try {
+        const response = await fetch('/api/status');
+        const data = await response.json();
+        
+        // Обновляем статус
+        setStatus('armed', data.armed ? '✓ ВКЛ' : '✗ ВЫКЛ', data.armed);
+        setStatus('alarm', data.alarm ? '⚠️ ДА' : '✗ НЕТ', data.alarm);
+        setStatus('main', data.mainPower ? '✓ ЕСТЬ' : '✗ НЕТ', data.mainPower);
+        setStatus('backup', data.resPower ? '✓ ЕСТЬ' : '✗ НЕТ', data.resPower);
+        
+        document.getElementById('temp').textContent = 
+          `Температура: ${data.temperature}°C`;
+        
+        document.getElementById('lastUpdate').textContent = 
+          new Date(data.timestamp).toLocaleTimeString('ru-RU');
+        
+        // Особые уведомления
+        if (data.alarm) {
+          document.body.style.backgroundColor = 'rgba(220, 53, 69, 0.3)';
+        }
+        
+      } catch (e) {
+        console.error('Ошибка получения статуса:', e);
+      }
+    }
+    
+    function setStatus(id, text, on) {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.className = 'status-value ' + (on ? 'status-on' : 'status-off');
+      
+      // Если питание выключено - красим в желтый
+      if ((id === 'main' || id === 'backup') && !on) {
+        el.className = 'status-value status-warn';
+      }
+    }
+    
+    async function loadHistory() {
+      try {
+        const response = await fetch('/api/history');
+        const events = await response.json();
+        
+        const list = document.getElementById('eventList');
+        list.innerHTML = '';
+        
+        events.reverse().forEach(event => {
+          const div = document.createElement('div');
+          div.className = `event ${event.type}`;
+          div.innerHTML = `
+            <span class="event-time">${event.time}</span>
+            <span>${event.message}</span>
+          `;
+          list.appendChild(div);
+        });
+        
+      } catch (e) {
+        console.error('Ошибка получения истории:', e);
+      }
+    }
+    
+    // Инициализация
+    updateStatus();
+    loadHistory();
+    
+    // Обновление каждые 3 секунды
+    setInterval(updateStatus, 3000);
+    setInterval(loadHistory, 5000);
+  </script>
+</body>
+</html>
