@@ -57,8 +57,10 @@ app.get('/', (req, res) => {
   });
 });
 
+// КРИТИЧНО: Bind на 0.0.0.0 для Render!
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ Server running on 0.0.0.0:${PORT}`);
+  console.log(`📡 Public: https://alarm-system-aaf8.onrender.com`);
   console.log(`📡 Endpoint: /api/value?v=XX`);
 });
